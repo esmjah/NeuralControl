@@ -1,2 +1,2 @@
 # NeuralControl
-Application of neural networks in control system
+Application of neural networks in control systems
