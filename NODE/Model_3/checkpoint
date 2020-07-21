@@ -1,0 +1,2 @@
+model_checkpoint_path: "CSTR_SecondOrder_MLP_v3_1.ckpt"
+all_model_checkpoint_paths: "CSTR_SecondOrder_MLP_v3_1.ckpt"
