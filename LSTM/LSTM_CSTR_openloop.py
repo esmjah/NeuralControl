@@ -89,7 +89,7 @@ train_data = np.concatenate((y_train, u_train), axis=1)
 
 col_= train_data.shape[1]
 # load the test data
-look_back = 5
+look_back = 25
 no_of_features=3  # Ca, T ,u
 
 trainX, trainY = create_dataset(train_data, look_back)
