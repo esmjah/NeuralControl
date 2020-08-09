@@ -23,7 +23,6 @@ tf.executing_eagerly()
 #============================ simulate process for training data ====================
 
 def pseudo_random_pulse(num_value, period, average_value, min_val, max_val):
-    np.random.seed(42)
     sig = np.zeros((num_value, 1))
     deviation = abs(max_val - min_val)
     j = 0
