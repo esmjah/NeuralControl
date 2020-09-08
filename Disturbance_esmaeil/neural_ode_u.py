@@ -42,7 +42,7 @@ def rk4_step(func, dt, state):
 class NeuralODE:
     def __init__(
             self, model: tf.keras.Model, t=np.linspace(0, 1, 40),
-            solver=rk4_step
+            solver=euler_step  # rk4_step
     ):
         self._t = t
         self._model = model
@@ -66,7 +66,7 @@ class NeuralODE:
 
         with tf.name_scope("forward"):
             t0 = tf.cast(self._t[0], dtype=tf.float32)
-            dim_u = int(u.size/u.shape[0])
+            dim_u = u.shape[1]
             dim_inputs = len(inputs)
             state = [t0, inputs]
             _append_state(state)

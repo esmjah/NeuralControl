@@ -149,8 +149,8 @@ max_u = np.max(u_process, axis=0)
 scale_u = 0.5*(max_u - min_u)
 
 
-u_train = (u_process - u_process[0])/scale_u
-y_train = (y_process - y_process[0])/scale_y
+u_train = tf.cast((u_process - u_process[0])/scale_u, dtype=tf.float32)
+y_train = tf.cast((y_process - y_process[0])/scale_y, dtype=tf.float32)
 t_train_data = t_process
 
 
@@ -225,6 +225,7 @@ t_sim = np.linspace(0, (batch_size - 1)*dt, num=batch_size)
 neural_ode = NeuralODE(model, t=t_sim)
 
 
+@tf.function
 def compute_gradients_and_update_path(initial_state, u_target, y_target):
     with tf.GradientTape() as g:
         final_y, x_history = neural_ode.forward(initial_state, u_target, return_states="tf")
@@ -257,7 +258,8 @@ y0_batch = y_train_batch[0]
 init_state_batch = tf.concat([u0_batch, y0_batch], axis=0)
 
 # final_y, y_history = neural_ode.forward(init_state_batch, u_train_batch, return_states="tf") used for test
-
+step_now = 0
+time_now = time.time()
 for step in range(n_iters + 1):
     y_train_batch = get_batch(y_train, batch_starts[step], batch_size)
     u_train_batch = get_batch(u_train, batch_starts[step], batch_size)
@@ -268,11 +270,22 @@ for step in range(n_iters + 1):
     loss_history.append(loss.numpy())
 
     if step % int(n_iters/100) == 0:
+        step_da = step_now
+        time_da = time_now
+        step_now = step
+        time_now = time.time()
+        if step > 0:
+            speed = 3600*(step_now - step_da)/(time_now - time_da)
+        else:
+            speed = 0
         percentage = int(100*step/n_iters)
+        s0 = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
         s1 = '{0:.0f}%'.format(percentage)
         s2 = 'Iteration: {0:.0f}'.format(step) + ' Of {0:.0f}'.format(n_iters)
         s3 = 'loss: {0:.4f}'.format(loss.numpy())
-        print(s1, s2, s3, sep=', ')
+        s4 = 'speed: {0:.4f}'.format(speed) + ' iter/hour'
+        print(s0, s1, s2, s3, s4, sep=', ')
+
 
 toc = time.time()
 training_time = toc - tic
